@@ -31,6 +31,22 @@ FRR_DEPENDENCIES = host-frr readline json-c libyang \
 
 HOST_FRR_DEPENDENCIES = host-flex host-bison host-elfutils host-python3
 
+ifeq ($(BR2_PACKAGE_NETSNMP),y)
+FRR_CONF_OPTS += --enable-snmp=agentx
+FRR_DEPENDENCIES += netsnmp
+FRR_CONF_ENV += \
+	ac_cv_path_NETSNMP_CONFIG=$(STAGING_DIR)/usr/bin/net-snmp-config
+else
+FRR_CONF_OPTS += --disable-snmp
+endif
+
+ifeq ($(BR2_PACKAGE_READLINE),y)
+FRR_CONF_OPTS += --with-readline
+FRR_DEPENDENCIES += readline
+else
+FRR_CONF_OPTS += --without-readline
+endif
+
 FRR_CONF_ENV = \
 	ac_cv_lib_cunit_CU_initialize_registry=no \
 	CFLAGS="$(TARGET_CFLAGS) -DFRR_XREF_NO_NOTE"
